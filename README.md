@@ -1,2 +1,2 @@
 # tgbot
-Telegram Bot
+Java library for Telegram Bot API subset and long-pooling based listener

@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: jackson-databind-2.5.4.jar jackson-annotations-2.5.0.jar j
+ ackson-core-2.5.4.jar http-request-6.0.jar
+

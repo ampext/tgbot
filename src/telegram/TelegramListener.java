@@ -70,7 +70,7 @@ public class TelegramListener
         commandListeners.add(listener);
     }
 
-    public TelegramAccess telegramAccess()
+    public TelegramAccess getTelegramAccess()
     {
         return this.telegramAccess;
     }

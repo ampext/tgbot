@@ -1,14 +1,12 @@
 package telegram;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import telegram.event.CommandHandler;
 import telegram.event.UpdateHandler;
 import telegram.objects.Message;
-import telegram.objects.PhotoSize;
 import telegram.objects.Update;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,8 +21,8 @@ public class TelegramListener
     private int updatesLimit = 50;
 
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private Vector<UpdateHandler> updateListeners = new Vector<>();
-    private Vector<CommandHandler> commandListeners = new Vector<>();
+    private List<UpdateHandler> updateListeners = new LinkedList<>();
+    private List<CommandHandler> commandListeners = new LinkedList<>();
 
     public TelegramListener(String token)
     {
@@ -60,15 +58,28 @@ public class TelegramListener
         scheduler.shutdown();
     }
 
-    public void addMessageListener(UpdateHandler listener)
+    public void addUpdateListener(UpdateHandler listener)
     {
-        updateListeners.add(listener);
+        if (!updateListeners.contains(listener))
+            updateListeners.add(listener);
+    }
+
+    public void removeUpdateListener(UpdateHandler listener)
+    {
+        updateListeners.remove(listener);
     }
 
     public void addCommandListener(CommandHandler listener)
     {
-        commandListeners.add(listener);
+        if (!commandListeners.contains(listener))
+            commandListeners.add(listener);
     }
+
+    public void removeCommandListener(CommandHandler listener)
+    {
+        commandListeners.remove(listener);
+    }
+
 
     public TelegramAccess getTelegramAccess()
     {

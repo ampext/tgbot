@@ -23,6 +23,14 @@ public class TelegramAccess
         this.apiUrl = "https://api.telegram.org/bot" + token;
     }
 
+    public User getMe() throws TelegramAccessException, IOException
+    {
+        String data = execCommand("getMe", new HashMap<>());
+        TelegramResponse<User> response = mapper.readValue(data, new TypeReference<TelegramResponse<User>>(){});
+
+        return getResult(response);
+    }
+
     public void sendMessage(int chatId, String text) throws TelegramAccessException
     {
         Map<String, String> args = new HashMap<>();

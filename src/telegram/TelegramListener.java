@@ -4,6 +4,7 @@ import telegram.event.CommandHandler;
 import telegram.event.UpdateHandler;
 import telegram.objects.Message;
 import telegram.objects.Update;
+import telegram.objects.User;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class TelegramListener
     private int lastUpdateId = -1;
     private int timeout = 0; // long pooling timeout
     private int updatesLimit = 50;
+    private User me;
 
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private List<UpdateHandler> updateListeners = new LinkedList<>();
@@ -41,6 +43,8 @@ public class TelegramListener
 
             if (updates != null && !updates.isEmpty())
                 lastUpdateId = updates.get(updates.size() - 1).getUpdateId();
+
+            me = telegramAccess.getMe();
         }
         catch (Exception e)
         {
@@ -93,26 +97,43 @@ public class TelegramListener
 
         Message message = update.getMessage();
 
-        if (message.getText() != null && message.getText().startsWith("/"))
+        if (message.getText() != null)
         {
-            String command;
-            String args;
+            String commandLine = "";
 
-            int split = message.getText().indexOf(" ");
-
-            if (split == -1 || split == message.getText().length() - 1)
+            if (message.getChat().isGroupChat())
             {
-                command = message.getText().substring(1);
-                args = "";
+                String text = message.getText().trim();
+
+                if (text.startsWith("@" + me.getUsername()))
+                    commandLine = text.substring(me.getUsername().length() + 1).trim();
             }
             else
             {
-                command = message.getText().substring(1, split);
-                args = message.getText().substring(split + 1);
+                commandLine = message.getText();
             }
 
-            for (CommandHandler listener: commandListeners)
-                listener.handle(command, args, message.getChat());
+            if (!commandLine.isEmpty() && commandLine.startsWith("/"))
+            {
+                String command;
+                String args;
+
+                int split = commandLine.indexOf(" ");
+
+                if (split == -1 || split == commandLine.length() - 1)
+                {
+                    command = commandLine.substring(1);
+                    args = "";
+                }
+                else
+                {
+                    command = commandLine.substring(1, split);
+                    args = commandLine.substring(split + 1);
+                }
+
+                for (CommandHandler listener: commandListeners)
+                    listener.handle(command, args, message.getChat());
+            }
         }
     }
 

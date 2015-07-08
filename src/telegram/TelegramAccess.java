@@ -14,7 +14,7 @@ import java.util.Vector;
 
 public class TelegramAccess
 {
-    private static String apiUrl;
+    private String apiUrl;
     private static ObjectMapper mapper = new ObjectMapper();
     private static MimetypesFileTypeMap typeMap = new MimetypesFileTypeMap();
 

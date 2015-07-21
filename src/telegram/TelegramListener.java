@@ -97,43 +97,40 @@ public class TelegramListener
 
         Message message = update.getMessage();
 
-        if (message.getText() != null)
+        if (message.getText() != null && message.getText().startsWith("/"))
         {
-            String commandLine = "";
+            String commandLine = message.getText();
 
-            if (message.getChat().isGroupChat())
+            String command;
+            String args;
+
+            int split = commandLine.indexOf(" ");
+
+            if (split == -1 || split == commandLine.length() - 1)
             {
-                String text = message.getText().trim();
-
-                if (text.startsWith("@" + me.getUsername()))
-                    commandLine = text.substring(me.getUsername().length() + 1).trim();
+                command = commandLine.substring(1);
+                args = "";
             }
             else
             {
-                commandLine = message.getText();
+                command = commandLine.substring(1, split);
+                args = commandLine.substring(split + 1);
             }
 
-            if (!commandLine.isEmpty() && commandLine.startsWith("/"))
+            if (message.getChat().isGroupChat())
             {
-                String command;
-                String args;
-
-                int split = commandLine.indexOf(" ");
-
-                if (split == -1 || split == commandLine.length() - 1)
+                if (command.endsWith("@" + me.getUsername()))
                 {
-                    command = commandLine.substring(1);
-                    args = "";
+                    command = command.substring(0, command.length() - me.getUsername().length() - 1);
                 }
-                else
-                {
-                    command = commandLine.substring(1, split);
-                    args = commandLine.substring(split + 1);
-                }
-
-                for (CommandHandler listener: commandListeners)
-                    listener.handle(command, args, message.getChat());
+                else command = "";
             }
+
+            if (command.isEmpty())
+                return;
+
+            for (CommandHandler listener: commandListeners)
+                listener.handle(command, args, message.getChat());
         }
     }
 

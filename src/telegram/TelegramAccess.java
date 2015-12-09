@@ -6,8 +6,9 @@ import com.github.kevinsawicki.http.HttpRequest;
 import telegram.objects.*;
 
 import javax.activation.MimetypesFileTypeMap;
-import java.io.File;
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -74,6 +75,26 @@ public class TelegramAccess
         return sendFile("sendPhoto", chatId, file, args);
     }
 
+    public Message sendPhoto(int chatId, BufferedImage image) throws TelegramAccessException, IOException
+    {
+        return sendPhoto(chatId, image, null, null);
+    }
+
+    public Message sendPhoto(int chatId, BufferedImage image, String caption) throws TelegramAccessException, IOException
+    {
+        return sendPhoto(chatId, image, caption, null);
+    }
+
+    public Message sendPhoto(int chatId, BufferedImage image, String caption, Integer replyId) throws TelegramAccessException, IOException
+    {
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        ImageIO.write(image, "JPG", outStream);
+
+        ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
+
+        return sendPhoto(chatId, new TelegramFile(inStream, "image.jpg", "image/jpeg"));
+    }
+
     public Message sendSticker(int chatId, TelegramFile file) throws TelegramAccessException, IOException
     {
         return sendPhoto(chatId, file, null);
@@ -126,19 +147,24 @@ public class TelegramAccess
         return request.body();
     }
 
-    private String sendData(String command, Map<String, String> args, String partName, File file) throws TelegramAccessException
+    private String sendData(String command, Map<String, String> args, String partName, String filename, String contentType, InputStream stream) throws TelegramAccessException
     {
         HttpRequest request = HttpRequest
                 .post(this.apiUrl + "/" + command)
                 .acceptJson();
 
         args.forEach((k, v) -> request.part(k, v));
-        request.part(partName, file.getName(), typeMap.getContentType(file), file);
+        request.part(partName, filename, contentType, stream);
 
         if (!request.ok())
             throw new TelegramAccessException(request.body());
 
         return request.body();
+    }
+
+    private String sendData(String command, Map<String, String> args, String partName, File file) throws TelegramAccessException, IOException
+    {
+        return sendData(command, args, partName, file.getName(), typeMap.getContentType(file), new FileInputStream(file));
     }
 
     private Message sendFile(String command, int chatId, TelegramFile file, Map<String, String> args) throws TelegramAccessException, IOException
@@ -148,6 +174,7 @@ public class TelegramAccess
         String data;
 
         if (file.getFile() != null) data = sendData(command, args, getFileTypeFromCommand(command), file.getFile());
+        if (file.getStream() != null) data = sendData(command, args, getFileTypeFromCommand(command), file.getFilename(), file.getContentType(), file.getStream());
         else
         {
             args.put(getFileTypeFromCommand(command), file.getId());

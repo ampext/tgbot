@@ -14,7 +14,7 @@ public class Message
     @JsonProperty("chat") private User chat;
     @JsonProperty("forward_from") private User forwardFrom;
     @JsonProperty("forward_date") private int forwardDate;
-    @JsonProperty("reply_to_message") private int replyToMessage;
+    @JsonProperty("reply_to_message") private Message replyToMessage;
     @JsonProperty("text") private String text;
     @JsonProperty("document") private Document document;
     @JsonProperty("photo") private Vector<PhotoSize> photo;
@@ -158,12 +158,12 @@ public class Message
         this.forwardDate = forwardDate;
     }
 
-    public int getReplyToMessage()
+    public Message getReplyToMessage()
     {
         return replyToMessage;
     }
 
-    public void setReplyToMessage(int replyToMessage)
+    public void setReplyToMessage(Message replyToMessage)
     {
         this.replyToMessage = replyToMessage;
     }

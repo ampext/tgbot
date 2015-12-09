@@ -6,9 +6,7 @@ import telegram.objects.Message;
 import telegram.objects.Update;
 import telegram.objects.User;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +23,8 @@ public class TelegramListener
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private List<UpdateHandler> updateListeners = new LinkedList<>();
     private List<CommandHandler> commandListeners = new LinkedList<>();
+
+    private Set<Integer> allowedChats = new HashSet<>();
 
     public TelegramListener(String token)
     {
@@ -84,10 +84,24 @@ public class TelegramListener
         commandListeners.remove(listener);
     }
 
-
     public TelegramAccess getTelegramAccess()
     {
-        return this.telegramAccess;
+        return telegramAccess;
+    }
+
+    public void addAllowedChat(int chatId)
+    {
+        allowedChats.add(chatId);
+    }
+
+    public void clearAllowedChats()
+    {
+        allowedChats.clear();
+    }
+
+    public Integer[] getAllowedChats()
+    {
+        return allowedChats.toArray(new Integer[0]);
     }
 
     private void updateReceived(Update update)
@@ -128,6 +142,12 @@ public class TelegramListener
 
             if (command.isEmpty())
                 return;
+
+            if (!allowedChats.isEmpty() && !allowedChats.contains(message.getChat().getId()))
+            {
+                System.out.print("skipped command from chat " + message.getChat().getId());
+                return;
+            }
 
             for (CommandHandler listener: commandListeners)
                 listener.handle(command, args, message.getChat());

@@ -3,7 +3,9 @@ package telegram;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kevinsawicki.http.HttpRequest;
-import telegram.objects.*;
+import telegram.objects.Message;
+import telegram.objects.Update;
+import telegram.objects.User;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
@@ -32,11 +34,11 @@ public class TelegramAccess
         return getResult(response);
     }
 
-    public void sendMessage(int chatId, String text) throws TelegramAccessException
+    public void sendMessage(long chatId, String text) throws TelegramAccessException
     {
         Map<String, String> args = new HashMap<>();
 
-        args.put("chat_id", Integer.toString(chatId));
+        args.put("chat_id", Long.toString(chatId));
         args.put("text", text);
 
         execCommand("sendMessage", args);
@@ -56,17 +58,17 @@ public class TelegramAccess
         return getResult(response);
     }
 
-    public Message sendPhoto(int chatId, TelegramFile file) throws TelegramAccessException, IOException
+    public Message sendPhoto(long chatId, TelegramFile file) throws TelegramAccessException, IOException
     {
         return sendPhoto(chatId, file, null, null);
     }
 
-    public Message sendPhoto(int chatId, TelegramFile file, String caption) throws TelegramAccessException, IOException
+    public Message sendPhoto(long chatId, TelegramFile file, String caption) throws TelegramAccessException, IOException
     {
         return sendPhoto(chatId, file, caption, null);
     }
 
-    public Message sendPhoto(int chatId, TelegramFile file, String caption, Integer replyId) throws TelegramAccessException, IOException
+    public Message sendPhoto(long chatId, TelegramFile file, String caption, Integer replyId) throws TelegramAccessException, IOException
     {
         Map<String, String> args = new HashMap<>();
         if (caption != null) args.put("caption", caption);
@@ -75,17 +77,17 @@ public class TelegramAccess
         return sendFile("sendPhoto", chatId, file, args);
     }
 
-    public Message sendPhoto(int chatId, BufferedImage image) throws TelegramAccessException, IOException
+    public Message sendPhoto(long chatId, BufferedImage image) throws TelegramAccessException, IOException
     {
         return sendPhoto(chatId, image, null, null);
     }
 
-    public Message sendPhoto(int chatId, BufferedImage image, String caption) throws TelegramAccessException, IOException
+    public Message sendPhoto(long chatId, BufferedImage image, String caption) throws TelegramAccessException, IOException
     {
         return sendPhoto(chatId, image, caption, null);
     }
 
-    public Message sendPhoto(int chatId, BufferedImage image, String caption, Integer replyId) throws TelegramAccessException, IOException
+    public Message sendPhoto(long chatId, BufferedImage image, String caption, Integer replyId) throws TelegramAccessException, IOException
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         ImageIO.write(image, "JPG", outStream);
@@ -95,12 +97,12 @@ public class TelegramAccess
         return sendPhoto(chatId, new TelegramFile(inStream, "image.jpg", "image/jpeg"));
     }
 
-    public Message sendSticker(int chatId, TelegramFile file) throws TelegramAccessException, IOException
+    public Message sendSticker(long chatId, TelegramFile file) throws TelegramAccessException, IOException
     {
         return sendPhoto(chatId, file, null);
     }
 
-    public Message sendSticker(int chatId, TelegramFile file, Integer replyId) throws TelegramAccessException, IOException
+    public Message sendSticker(long chatId, TelegramFile file, Integer replyId) throws TelegramAccessException, IOException
     {
         Map<String, String> args = new HashMap<>();
         if (replyId != null) args.put("reply_to_message_id", replyId.toString());
@@ -113,7 +115,7 @@ public class TelegramAccess
         return sendPhoto(chatId, file, null);
     }
 
-    public Message sendVideo(int chatId, TelegramFile file, Integer replyId) throws TelegramAccessException, IOException
+    public Message sendVideo(long chatId, TelegramFile file, Integer replyId) throws TelegramAccessException, IOException
     {
         Map<String, String> args = new HashMap<>();
         if (replyId != null) args.put("reply_to_message_id", replyId.toString());
@@ -121,12 +123,12 @@ public class TelegramAccess
         return sendFile("sendVideo", chatId, file, args);
     }
 
-    public Message sendDocument(int chatId, TelegramFile file) throws TelegramAccessException, IOException
+    public Message sendDocument(long chatId, TelegramFile file) throws TelegramAccessException, IOException
     {
         return sendPhoto(chatId, file, null);
     }
 
-    public Message sendDocument(int chatId, TelegramFile file, Integer replyId) throws TelegramAccessException, IOException
+    public Message sendDocument(long chatId, TelegramFile file, Integer replyId) throws TelegramAccessException, IOException
     {
         Map<String, String> args = new HashMap<>();
         if (replyId != null) args.put("reply_to_message_id", replyId.toString());
@@ -167,9 +169,9 @@ public class TelegramAccess
         return sendData(command, args, partName, file.getName(), typeMap.getContentType(file), new FileInputStream(file));
     }
 
-    private Message sendFile(String command, int chatId, TelegramFile file, Map<String, String> args) throws TelegramAccessException, IOException
+    private Message sendFile(String command, long chatId, TelegramFile file, Map<String, String> args) throws TelegramAccessException, IOException
     {
-        args.put("chat_id", Integer.toString(chatId));
+        args.put("chat_id", Long.toString(chatId));
 
         String data;
 

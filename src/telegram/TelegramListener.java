@@ -24,7 +24,7 @@ public class TelegramListener
     private List<UpdateHandler> updateListeners = new LinkedList<>();
     private List<CommandHandler> commandListeners = new LinkedList<>();
 
-    private Set<Integer> allowedChats = new HashSet<>();
+    private Set<Long> allowedChats = new HashSet<>();
 
     public TelegramListener(String token)
     {
@@ -39,7 +39,7 @@ public class TelegramListener
 
         try
         {
-            Vector<Update> updates = telegramAccess.getUpdates(0, 1, null);
+            Vector<Update> updates = telegramAccess.getUpdates(0, updatesLimit, null);
 
             if (updates != null && !updates.isEmpty())
                 lastUpdateId = updates.get(updates.size() - 1).getUpdateId();
@@ -89,7 +89,7 @@ public class TelegramListener
         return telegramAccess;
     }
 
-    public void addAllowedChat(int chatId)
+    public void addAllowedChat(long chatId)
     {
         allowedChats.add(chatId);
     }

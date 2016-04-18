@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User
 {
-    @JsonProperty("id") private int id;
+    @JsonProperty("id") private long id;
     @JsonProperty("first_name") private String firstName;
     @JsonProperty("last_name") private String lastName;
     @JsonProperty("username") private String username;
@@ -16,12 +16,12 @@ public class User
         return id < 0;
     }
 
-    public int getId()
+    public long getId()
     {
         return id;
     }
 
-    public void setId(int id)
+    public void setId(long id)
     {
         this.id = id;
     }

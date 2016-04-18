@@ -1,6 +1,5 @@
 package telegram.event;
 
-import telegram.objects.Update;
 import telegram.objects.User;
 
 import java.util.EventListener;

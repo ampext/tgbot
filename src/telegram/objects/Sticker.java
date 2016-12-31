@@ -1,13 +1,16 @@
 package telegram.objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Sticker
 {
     @JsonProperty("file_id") private String fileId;
     @JsonProperty("width") private int width;
     @JsonProperty("height") private int height;
     @JsonProperty("thumb") private PhotoSize thumb;
+    @JsonProperty("emoji") private String emoji;
     @JsonProperty("file_size") private int fileSize;
 
     public String getFileId()
@@ -58,5 +61,15 @@ public class Sticker
     public void setFileSize(int fileSize)
     {
         this.fileSize = fileSize;
+    }
+
+    public String getEmoji()
+    {
+        return emoji;
+    }
+
+    public void setEmoji(String emoji)
+    {
+        this.emoji = emoji;
     }
 }

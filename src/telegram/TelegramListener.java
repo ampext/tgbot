@@ -34,26 +34,18 @@ public class TelegramListener
     public TelegramListener(String token, int timeout)
     {
         this.timeout = timeout;
-
         telegramAccess = new TelegramAccess(token);
-
-        try
-        {
-            Vector<Update> updates = telegramAccess.getUpdates(0, updatesLimit, null);
-
-            if (updates != null && !updates.isEmpty())
-                lastUpdateId = updates.get(updates.size() - 1).getUpdateId();
-
-            me = telegramAccess.getMe();
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-        }
     }
 
-    public void start()
+    public void start() throws Exception
     {
+        Vector<Update> updates = telegramAccess.getUpdates(0, updatesLimit, null);
+
+        if (updates != null && !updates.isEmpty())
+            lastUpdateId = updates.get(updates.size() - 1).getUpdateId();
+
+        me = telegramAccess.getMe();
+
         scheduler.schedule(() -> this.checkUpdates(), 0, TimeUnit.MILLISECONDS);
     }
 
@@ -111,7 +103,7 @@ public class TelegramListener
 
         Message message = update.getMessage();
 
-        if (message.getText() != null && message.getText().startsWith("/"))
+        if (message != null && message.getText() != null && message.getText().startsWith("/"))
         {
             String commandLine = message.getText();
 
@@ -175,7 +167,7 @@ public class TelegramListener
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            System.err.println("checkUpdates error: " + e.getMessage());
         }
 
         scheduler.schedule(() -> this.checkUpdates(), 0, TimeUnit.MILLISECONDS);

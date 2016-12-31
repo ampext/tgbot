@@ -11,6 +11,7 @@ public class Message
     @JsonProperty("message_id") private int messageId;
     @JsonProperty("from") private User from;
     @JsonProperty("date") private int date;
+    @JsonProperty("edit_date") private int editDate;
     @JsonProperty("chat") private User chat;
     @JsonProperty("forward_from") private User forwardFrom;
     @JsonProperty("forward_date") private int forwardDate;
@@ -20,6 +21,7 @@ public class Message
     @JsonProperty("photo") private Vector<PhotoSize> photo;
     @JsonProperty("sticker") private Sticker sticker;
     @JsonProperty("video") private Video video;
+    @JsonProperty("caption") private String caption;
     @JsonProperty("location") private Location location;
     @JsonProperty("new_chat_participant") private User newChatParticipant;
     @JsonProperty("left_chat_participant") private User leftChatParticipant;
@@ -216,5 +218,25 @@ public class Message
     public void setLocation(Location location)
     {
         this.location = location;
+    }
+
+    public int getEditDate()
+    {
+        return editDate;
+    }
+
+    public void setEditDate(int editDate)
+    {
+        this.editDate = editDate;
+    }
+
+    public String getCaption()
+    {
+        return caption;
+    }
+
+    public void setCaption(String caption)
+    {
+        this.caption = caption;
     }
 }
